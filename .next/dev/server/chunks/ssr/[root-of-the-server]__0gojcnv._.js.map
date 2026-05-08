@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 10, "column": 0}, "map": {"version":3,"sources":["file:///home/ranjithkumar/ranjith_repos/Certificate_page/pages/index.tsx"],"sourcesContent":["import React from 'react';\n\nconst Home = () => {\n    return (\n        <div>\n            <h1>Welcome to the Certificate Generation App</h1>\n            {/* Add navigation or content here */}\n        </div>\n    );\n};\n\nexport default Home;\n"],"names":["Home"],"mappings":";;;;;;AAEA,MAAMA,OAAO;IACT,qBACI,qKAAC;kBACG,cAAA,qKAAC;sBAAG;;;;;;;;;;;AAIhB;uCAEeA"}}]
+}
