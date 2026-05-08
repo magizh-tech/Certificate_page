@@ -14,13 +14,13 @@ interface Document {
 const documentTypes: Document[] = [
   {
     title: 'Experience Certificate',
-    description: 'Professional certification of work experience with detailed employment history and accomplishments',
-    path: '/experience-certificate/form',
+    description: 'Professional certificates recognizing employee tenure, role, and achievements during employment',
+    path: 'https://employee-experience-certificate.vercel.app/',
   },
   {
     title: 'Offer Letter',
     description: 'Comprehensive employment offers with compensation, benefits, and position details',
-    path: '/offer-letter/form',
+    path: '/offer-letter',
   },
   {
     title: 'Relieving Letter',
@@ -38,6 +38,7 @@ const documentTypes: Document[] = [
     path: 'https://pay-slip-xi.vercel.app/',
     isExternal: true,
   },
+ 
   {
     title: 'Receipt Generator',
     description: 'Professional payment receipts with company branding and transaction details',

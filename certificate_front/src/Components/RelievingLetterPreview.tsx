@@ -1,8 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { Download, Edit2, FileText, ArrowLeft } from 'lucide-react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { Download } from 'lucide-react'
 import React, { useRef } from 'react'
 
 interface RelievingLetterData {
@@ -28,18 +27,39 @@ function formatDate(dateString: string): string {
   return new Date(dateString).toLocaleDateString('en-US', options)
 }
 
+// Sample data for preview
+const sampleData: RelievingLetterData = {
+  companyName: 'Acme Corporation',
+  employeeName: 'John Doe',
+  employeeId: 'EMP-2024-001',
+  designation: 'Senior Software Engineer',
+  department: 'Engineering',
+  startDate: '2020-03-15',
+  endDate: '2025-12-31',
+  reasonForRelief: 'Pursuing higher education abroad',
+  companyCEO: 'Jane Smith',
+  companyAddress: '123 Business Park, Suite 400\nSan Francisco, CA 94105',
+  letterDate: '2026-01-15',
+}
+
 export function RelievingLetterPreview() {
-  const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
   const printRef = useRef<HTMLDivElement>(null)
 
-  const data: RelievingLetterData = JSON.parse(
-    decodeURIComponent(searchParams.get('data') || '{}')
-  )
-
-  const handlePrint = () => {
-    window.print()
-  }
+  // Use URL params if available, otherwise use sample data
+  const data: RelievingLetterData = (() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search)
+      const encoded = params.get('data')
+      if (encoded) {
+        try {
+          return JSON.parse(decodeURIComponent(encoded))
+        } catch {
+          return sampleData
+        }
+      }
+    }
+    return sampleData
+  })()
 
   const handleDownload = async () => {
     const element = printRef.current
@@ -48,27 +68,32 @@ export function RelievingLetterPreview() {
     try {
       const html2pdf = (await import('html2pdf.js')).default
       const opt = {
-        margin: 10,
+        margin: [10, 10, 10, 10],
         filename: `${data.employeeName}-Relieving-Letter.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          letterRendering: true,
+        },
+        jsPDF: { orientation: 'portrait' as const, unit: 'mm' as const, format: 'a4' as const },
+        pagebreak: { mode: ['avoid-all'] },
       }
       html2pdf().set(opt).from(element).save()
-    } catch (error) {
+    } catch {
       window.print()
     }
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 relative">
+    <div className="min-h-screen bg-muted/40 py-12 relative">
       <div className="fixed top-8 right-8 z-10">
         <Button
           onClick={handleDownload}
-          className="bg-gray-900 hover:bg-gray-800 text-white flex items-center gap-2 font-light rounded"
+          className="flex items-center gap-2 rounded"
         >
           <Download className="h-4 w-4" />
-          Download
+          Download PDF
         </Button>
       </div>
 
@@ -76,83 +101,85 @@ export function RelievingLetterPreview() {
       <div className="max-w-2xl mx-auto">
         <div
           ref={printRef}
-          className="bg-white p-16 shadow-sm relative"
           style={{
             fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif',
-            lineHeight: '1.7',
+            lineHeight: '1.8',
             color: '#000',
-            width: '210mm',
-            minHeight: '297mm',
+            width: '190mm',
+            height: '277mm',
+            overflow: 'hidden',
             margin: '0 auto',
+            background: '#fff',
+            padding: '14mm 14mm',
             display: 'flex',
-            flexDirection: 'column'
+            flexDirection: 'column',
+            boxSizing: 'border-box',
           }}
         >
           {/* Company Header - Centered */}
-          <div className="text-center mb-12 pb-8 border-b border-gray-200">
-            <img 
+          <div style={{ textAlign: 'center', marginBottom: '28px', paddingBottom: '18px', borderBottom: '1px solid #e5e7eb' }}>
+            <img
               src="/logo.png"
-              alt="Company Logo" 
-              className="h-20 w-auto mx-auto mb-6"
+              alt="Company Logo"
+              style={{ height: '56px', width: 'auto', margin: '0 auto 12px auto', display: 'block' }}
               onError={(e) => {
                 const target = e.target as HTMLImageElement
                 target.style.display = 'none'
               }}
             />
-            <h1 className="text-3xl font-normal text-gray-900 mb-3 tracking-tight">
+            <h1 style={{ fontSize: '26px', fontWeight: 400, color: '#111', margin: '0 0 8px 0', letterSpacing: '-0.01em' }}>
               {data.companyName}
             </h1>
-            <p className="text-base text-gray-600 font-light whitespace-pre-line">
+            <p style={{ fontSize: '13px', color: '#666', fontWeight: 300, margin: 0, whiteSpace: 'pre-line' }}>
               {data.companyAddress}
             </p>
           </div>
 
           {/* Date */}
-          <div className="mb-12 text-right">
-            <p className="text-sm text-gray-700 font-light">
+          <div style={{ marginBottom: '22px', textAlign: 'right' }}>
+            <p style={{ fontSize: '14px', color: '#444', fontWeight: 300, margin: 0 }}>
               {formatDate(data.letterDate)}
             </p>
           </div>
 
           {/* Salutation */}
-          <div className="mb-10">
-            <p className="text-sm text-gray-900 font-light">Dear Concerned,</p>
+          <div style={{ marginBottom: '20px' }}>
+            <p style={{ fontSize: '15px', color: '#111', fontWeight: 300, margin: 0 }}>Dear Concerned,</p>
           </div>
 
           {/* Main Letter Body */}
-          <div className="space-y-6 text-gray-900 font-light text-justify">
-            <p className="text-sm leading-relaxed">
+          <div style={{ flex: 1 }}>
+            <p style={{ fontSize: '14px', lineHeight: '1.9', color: '#111', fontWeight: 300, textAlign: 'justify', margin: '0 0 16px 0' }}>
               This is to certify that {data.companyName} hereby confirms that {data.employeeName} with Employee ID {data.employeeId} has been employed as a {data.designation} in the {data.department} Department with our organization from {formatDate(data.startDate)} to {formatDate(data.endDate)}.
             </p>
 
-            <p className="text-sm leading-relaxed">
+            <p style={{ fontSize: '14px', lineHeight: '1.9', color: '#111', fontWeight: 300, textAlign: 'justify', margin: '0 0 16px 0' }}>
               During his/her tenure with us, {data.employeeName} has worked on several key projects of the company and has consistently delivered excellence. He/She has been punctual and regular in his/her duties and has maintained an excellent professional reputation among team members and clients alike. {data.employeeName} is a dedicated team player who has contributed significantly to the growth and success of our organization.
             </p>
 
             {data.reasonForRelief && (
-              <p className="text-sm leading-relaxed">
+              <p style={{ fontSize: '14px', lineHeight: '1.9', color: '#111', fontWeight: 300, textAlign: 'justify', margin: '0 0 16px 0' }}>
                 Reason for Relief: {data.reasonForRelief.replace(/<[^>]*>?/gm, '')}
               </p>
             )}
 
-            <p className="text-sm leading-relaxed">
+            <p style={{ fontSize: '14px', lineHeight: '1.9', color: '#111', fontWeight: 300, textAlign: 'justify', margin: '0 0 16px 0' }}>
               We hereby relieve {data.employeeName} of all responsibilities and duties with immediate effect. This letter is issued for the purpose of his/her future employment or any other official use as required. We wish him/her all the best in his/her future endeavors.
             </p>
           </div>
 
-          {/* Closing Section */}
-          <div className="mt-20 pt-16">
-            <p className="text-sm text-gray-900 font-light mb-16">Regards,</p>
+          {/* Closing Section - pushed to bottom */}
+          <div style={{ marginTop: 'auto', paddingTop: '20px' }}>
+            <p style={{ fontSize: '14px', color: '#111', fontWeight: 300, margin: '0 0 40px 0' }}>Regards,</p>
 
             {/* Signature Space */}
             <div>
-              <div className="border-b border-gray-400 mb-2 h-16 w-48" />
-              <p className="text-sm text-gray-900 font-light mt-1">{data.companyCEO}</p>
-              <p className="text-xs text-gray-600 font-light mt-1">Authorized Signatory</p>
-              <p className="text-xs text-gray-600 font-light mt-1">{data.companyName}</p>
+              <div style={{ borderBottom: '1px solid #999', height: '40px', width: '160px', marginBottom: '6px' }} />
+              <p style={{ fontSize: '14px', color: '#111', fontWeight: 300, margin: '0 0 3px 0' }}>{data.companyCEO}</p>
+              <p style={{ fontSize: '12px', color: '#666', fontWeight: 300, margin: '0 0 3px 0' }}>Authorized Signatory</p>
+              <p style={{ fontSize: '12px', color: '#666', fontWeight: 300, margin: 0 }}>{data.companyName}</p>
             </div>
           </div>
-
         </div>
       </div>
 
@@ -171,20 +198,10 @@ export function RelievingLetterPreview() {
           .fixed {
             display: none !important;
           }
-          .shadow-sm {
-            box-shadow: none !important;
-          }
-          .bg-gray-50 {
-            background: white !important;
-          }
         }
         @page {
           size: A4;
-          margin: 0;
-        }
-        body {
-          margin: 0;
-          padding: 0;
+          margin: 10mm;
         }
       `}</style>
     </div>

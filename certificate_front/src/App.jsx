@@ -6,8 +6,6 @@ import CertificatePage from './Components/CertificatePage.jsx';
 import GeneratedCertificate from './Components/GeneratedCertificate.jsx';
 import DocumentGenerator from './Components/documentgenerator.jsx';
 import GeneratedLetter from './Components/GeneratedLetter.jsx';
-import NewExperienceCertificate from './Components/NewExperienceCertificate.jsx';
-import ViewExperienceCertificate from './Components/ViewExperienceCertificate.tsx';
 import OfferLetterPreview from './Components/OfferLetterPreview';
 import NewOfferLetterForm from './Components/NewOfferLetterForm';
 import { RelievingLetterPreview } from './Components/RelievingLetterPreview';
@@ -40,18 +38,8 @@ const AppRoutes = () => {
       } />
       
       {/* Experience Certificate */}
-      <Route path="/experience-certificate/form" element={
-        <ProtectedRoute>
-          <NewExperienceCertificate />
-        </ProtectedRoute>
-      } />
-      
-      <Route path="/view-experience-certificate" element={
-        <ProtectedRoute>
-          <ViewExperienceCertificate />
-        </ProtectedRoute>
-      } />
-      
+            
+            
       {/* Offer Letter Routes */}
       <Route path="/offer-letter/form" element={
         <ProtectedRoute>

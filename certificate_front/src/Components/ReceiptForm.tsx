@@ -35,7 +35,7 @@ export default function ReceiptForm() {
     receiptNumber: `RCPT-${Math.floor(1000 + Math.random() * 9000)}`,
     date: new Date(),
     from: '',
-    to: 'Magizh Technologies',
+    to: 'Your Company',
     amount: '',
     amountInWords: '',
     description: 'Monthly Payment',
@@ -66,7 +66,7 @@ export default function ReceiptForm() {
       receiptNumber: `RCPT-${Math.floor(1000 + Math.random() * 9000)}`,
       date: new Date(),
       from: '',
-      to: 'Magizh Technologies',
+      to: 'Your Company',
       amount: '',
       amountInWords: '',
       description: 'Monthly Payment',
@@ -121,15 +121,18 @@ export default function ReceiptForm() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 p-2 md:p-4">
       <div className="container mx-auto max-w-3xl">
         {/* Header */}
         <div className="mb-10">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-1.5 h-10 bg-slate-900 rounded-full"></div>
-            <h1 className="text-4xl font-bold text-slate-900">Receipt Generator</h1>
+          <div className="flex items-center gap-4 mb-3">
+            <img src="/logo.png" alt="Magizh Technologies Logo" className="h-12 w-auto" />
+            <div>
+              <h1 className="text-4xl font-bold text-slate-900">Magizh Technologies</h1>
+              <p className="text-gray-600 text-sm mt-1">Receipt Generator</p>
+            </div>
           </div>
-          <p className="text-gray-600 text-lg ml-6">Create professional payment receipts instantly</p>
+          <p className="text-gray-600 text-lg ml-16">Create professional payment receipts instantly</p>
         </div>
 
         <Card className="shadow-2xl border-0 overflow-hidden">
@@ -316,115 +319,139 @@ export default function ReceiptForm() {
 
 function ReceiptDisplay({ data, onBack }: { data: ReceiptData, onBack: () => void }) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 p-4 md:p-8">
-      <div className="container mx-auto max-w-3xl">
-        <div className="mb-6">
-          <Button 
-            onClick={onBack}
-            variant="outline"
-            className="border-gray-300 hover:bg-gray-50 text-gray-700 bg-transparent"
-          >
-            <ArrowLeft size={18} className="mr-2" />
-            Back to Form
-          </Button>
-        </div>
-
-        <Card className="shadow-2xl border-0 overflow-hidden bg-white">
-          {/* Receipt Header */}
-          <div className="bg-gradient-to-r from-slate-900 to-slate-800 px-8 py-10 text-white">
-            {/* Company Name - Centered */}
-            <div className="flex flex-col items-center text-center mb-5">
-              <h2 className="text-4xl font-bold text-white">Magizh Technologies</h2>
-              <p className="text-slate-300 text-sm mt-1.5">Professional IT Solutions</p>
-            </div>
-            <div className="border-b border-slate-700 pb-6 mb-6"></div>
-
-            <div className="mb-6">
-              <h1 className="text-4xl font-bold mb-2">OFFICIAL RECEIPT</h1>
-              <div className="h-1 w-16 bg-blue-400 rounded-full"></div>
-            </div>
-            <div className="grid grid-cols-2 gap-8">
-              <div>
-                <p className="text-slate-300 text-sm mb-1">Receipt Number</p>
-                <p className="text-xl font-mono font-bold text-blue-400">{data.receiptNumber}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-slate-300 text-sm mb-1">Date</p>
-                <p className="text-xl font-bold">{data.date ? format(data.date, 'dd MMM yyyy') : ''}</p>
-              </div>
-            </div>
+    <>
+      <style>{`
+        @media print {
+          body {
+            margin: 0;
+            padding: 0;
+          }
+          * {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+          .no-print {
+            display: none !important;
+          }
+          .receipt-container {
+            max-width: 100%;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+          }
+          .receipt-card {
+            box-shadow: none;
+            page-break-after: avoid;
+          }
+        }
+      `}</style>
+      
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 p-2 md:p-4">
+        <div className="container mx-auto max-w-3xl">
+          <div className="mb-6 no-print">
+            <Button 
+              onClick={onBack}
+              variant="outline"
+              className="border-gray-300 hover:bg-gray-50 text-gray-700 bg-transparent"
+            >
+              <ArrowLeft size={18} className="mr-2" />
+              Back to Form
+            </Button>
           </div>
 
-          {/* Receipt Body */}
-          <CardContent className="p-10 space-y-8">
-            {/* Received From Section */}
-            <div className="border-l-4 border-blue-400 pl-6">
-              <p className="text-gray-600 text-sm font-semibold uppercase tracking-wide mb-2">Received with thanks from</p>
-              <p className="text-2xl font-bold text-slate-900">{data.from}</p>
-            </div>
+          <Card className="shadow-2xl border-0 overflow-hidden bg-white receipt-card">
+            {/* Receipt Header */}
+            <div className="bg-gradient-to-r from-slate-900 to-slate-800 px-8 py-10 text-white">
+              {/* Logo and Company Name - Centered */}
+              <div className="flex flex-col items-center text-center mb-5">
+                <div className="mb-4">
+                  <img src="/logo.png" alt="Magizh Technologies Logo" className="h-16 w-auto" />
+                </div>
+                <h2 className="text-3xl font-bold text-white">Magizh Technologies</h2>
+                <p className="text-slate-300 text-sm mt-1">Professional Receipt Solutions</p>
+              </div>
+              <div className="border-b border-slate-700 pb-6 mb-6"></div>
 
-            {/* Amount Section */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-lg border border-gray-200">
-              <div>
-                <p className="text-gray-600 text-sm font-semibold uppercase tracking-wide mb-2">The sum of (in words)</p>
-                <p className="text-lg font-semibold text-slate-900 leading-relaxed">{data.amountInWords}</p>
+              <div className="mb-6">
+                <h1 className="text-4xl font-bold mb-2">OFFICIAL RECEIPT</h1>
+                <div className="h-1 w-16 bg-blue-400 rounded-full"></div>
               </div>
-              <div className="md:text-right">
-                <p className="text-gray-600 text-sm font-semibold uppercase tracking-wide mb-2">Amount (₹)</p>
-                <p className="text-3xl font-bold text-blue-600">{parseFloat(data.amount).toFixed(2)}</p>
-              </div>
-            </div>
-
-            {/* Details Section */}
-            <div className="space-y-4">
-              <div className="flex justify-between py-3 border-b border-gray-200">
-                <span className="font-semibold text-gray-900">Payment Method:</span>
-                <span className="text-gray-700 font-medium">{data.paymentMethod}</span>
-              </div>
-              <div className="flex justify-between py-3 border-b border-gray-200">
-                <span className="font-semibold text-gray-900">Description:</span>
-                <span className="text-gray-700 font-medium text-right max-w-xs">{data.description}</span>
-              </div>
-              <div className="flex justify-between py-3">
-                <span className="font-semibold text-gray-900">Receiver Organization:</span>
-                <span className="text-gray-700 font-medium">{data.to}</span>
-              </div>
-            </div>
-
-            {/* Signature Section */}
-            <div className="pt-8 border-t-2 border-slate-900">
-              <div className="grid grid-cols-2 gap-12">
+              <div className="grid grid-cols-2 gap-8">
                 <div>
-                  <p className="text-sm text-gray-600 mb-8">For {data.to}</p>
-                  <div className="border-b-2 border-slate-900 pb-2 mb-2"></div>
-                  <p className="text-xs font-semibold text-gray-900 uppercase">Authorized Signature</p>
+                  <p className="text-slate-300 text-sm mb-1">Receipt Number</p>
+                  <p className="text-xl font-mono font-bold text-blue-400">{data.receiptNumber}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-gray-600 mb-1">Received By: {data.receivedBy}</p>
-                  <div className="border-b-2 border-slate-900 pb-2 mb-2 mt-6"></div>
-                  <p className="text-xs font-semibold text-gray-900 uppercase">Signature & Date</p>
+                  <p className="text-slate-300 text-sm mb-1">Date</p>
+                  <p className="text-xl font-bold">{data.date ? format(data.date, 'dd MMM yyyy') : ''}</p>
                 </div>
               </div>
             </div>
 
-            {/* Footer */}
-            <div className="bg-slate-900 text-white p-4 rounded-lg text-center">
-              <p className="text-sm">This is a computer-generated receipt. No signature is required.</p>
-            </div>
-          </CardContent>
-        </Card>
+            {/* Receipt Body */}
+            <CardContent className="p-10 space-y-8">
+              {/* Received From Section */}
+              <div className="border-l-4 border-blue-400 pl-6">
+                <p className="text-gray-600 text-sm font-semibold uppercase tracking-wide mb-2">Received with thanks from</p>
+                <p className="text-2xl font-bold text-slate-900">{data.from}</p>
+              </div>
 
-        {/* Print Actions */}
-        <div className="flex justify-center gap-4 mt-8">
-          <Button 
-            onClick={() => window.print()}
-            className="bg-slate-900 hover:bg-slate-800 text-white px-8"
-          >
-            <Download size={18} className="mr-2" />
-            Download Receipt
-          </Button>
+              {/* Amount Section */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-lg border border-gray-200">
+                <div>
+                  <p className="text-gray-600 text-sm font-semibold uppercase tracking-wide mb-2">The sum of (in words)</p>
+                  <p className="text-lg font-semibold text-slate-900 leading-relaxed">{data.amountInWords}</p>
+                </div>
+                <div className="md:text-right">
+                  <p className="text-gray-600 text-sm font-semibold uppercase tracking-wide mb-2">Amount (₹)</p>
+                  <p className="text-3xl font-bold text-blue-600">{parseFloat(data.amount).toFixed(2)}</p>
+                </div>
+              </div>
+
+              {/* Details Section */}
+              <div className="space-y-4">
+                <div className="flex justify-between py-3 border-b border-gray-200">
+                  <span className="font-semibold text-gray-900">Payment Method:</span>
+                  <span className="text-gray-700 font-medium">{data.paymentMethod}</span>
+                </div>
+                <div className="flex justify-between py-3 border-b border-gray-200">
+                  <span className="font-semibold text-gray-900">Description:</span>
+                  <span className="text-gray-700 font-medium text-right max-w-xs">{data.description}</span>
+                </div>
+                <div className="flex justify-between py-3">
+                  <span className="font-semibold text-gray-900">Receiver Organization:</span>
+                  <span className="text-gray-700 font-medium">{data.to}</span>
+                </div>
+              </div>
+
+              {/* Signature Section */}
+              <div className="pt-8 border-t-2 border-slate-900">
+                <div className="grid grid-cols-2 gap-8 mt-12">
+                  <div className="text-center">
+                    <div className="border-t border-gray-400 pt-2 mt-8"></div>
+                    <p className="text-gray-600 font-medium text-sm">Authorized Signature</p>
+                  </div>
+                  <div className="text-center">
+                    <div className="border-t border-gray-400 pt-2 mt-8"></div>
+                    <p className="text-gray-600 font-medium text-sm">Received By: {data.receivedBy}</p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Print Actions - Hidden when printing */}
+          <div className="flex justify-center gap-4 mt-8 no-print">
+            <Button 
+              onClick={() => window.print()}
+              className="bg-slate-900 hover:bg-slate-800 text-white px-8"
+            >
+              <Download size={18} className="mr-2" />
+              Download Receipt
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

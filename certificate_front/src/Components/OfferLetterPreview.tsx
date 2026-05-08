@@ -16,6 +16,7 @@ function OfferLetterPreview() {
     salary: searchParams.get('salary') || '',
     workLocation: searchParams.get('workLocation') || '',
     issueDate: searchParams.get('issueDate') || '',
+    companyCEO: searchParams.get('companyCEO') || '',
     companyName: searchParams.get('companyName') || 'Magizh Technologies',
     companyAddress: searchParams.get('companyAddress') || '',
     companyWebsite: searchParams.get('companyWebsite') || '',
@@ -36,154 +37,126 @@ function OfferLetterPreview() {
     const date = new Date(dateString)
     return date.toLocaleDateString('en-GB', {
       day: '2-digit',
-      month: '2-digit',
+      month: 'long',
       year: 'numeric'
-    }).replace(/\//g, '.')
+    })
   }
 
   return (
-    <div className="min-h-screen bg-neutral-100 py-8 px-4 md:py-12">
-      <div className="mx-auto max-w-3xl">
+    <div className="text-gray-900 font-light whitespace-pre-line">
+      <div className="max-w-3xl mx-auto">
         {/* Action Buttons */}
-        <div className="flex justify-between items-center mb-8 print:hidden">
+        <div className="flex justify-between items-center mb-8 print:hidden gap-4">
           <button
             onClick={handleBack}
-            className="px-6 py-2.5 border border-neutral-300 bg-white text-sm font-medium rounded-full hover:bg-neutral-50 transition-colors duration-200 flex items-center gap-2"
+            className="px-5 py-2 border border-slate-300 bg-white text-sm font-medium text-slate-700 rounded-md hover:bg-slate-50 transition-colors duration-200 flex items-center gap-2"
           >
-            <ArrowLeft className="w-5 h-5" />
-            Back to Edit
+            <ArrowLeft className="w-4 h-4" />
+            Back
           </button>
           <button
             onClick={handlePrint}
-            className="px-6 py-2.5 bg-neutral-900 text-white text-sm font-medium rounded-full hover:bg-black transition-colors duration-200"
+            className="px-5 py-2 bg-slate-900 text-white text-sm font-medium rounded-md hover:bg-slate-800 transition-colors duration-200"
           >
             Print
           </button>
         </div>
 
         {/* Document Container */}
-        <div className="bg-white shadow-xl overflow-hidden border border-neutral-200">
+        <div className="bg-white shadow-lg overflow-hidden border border-slate-200">
           
-          {/* Centered Header */}
-          <div className="relative">
-            {/* Top Yellow Bar */}
-            <div className="h-1.5 bg-amber-400" />
-            
-            {/* Header Content */}
-            <div className="px-8 pt-8 pb-6 md:px-12">
+          {/* Header Section */}
+          <div className="border-b-2 border-slate-900">
+            <div className="px-10 py-5 md:px-14">
               <div className="flex flex-col items-center text-center">
                 {/* Logo */}
                 <img 
                   src="/logo.png" 
-                  alt="Magizh Technologies Logo" 
-                  className="h-20 w-auto"
+                  alt="Company Logo" 
+                  className="h-14 w-auto"
                 />
                 
                 {/* Company Name */}
-                <div className="mt-4">
-                  <h1 
-                    className="text-3xl md:text-4xl font-bold text-gray-800"
-                    style={{ 
-                      fontFamily: 'Old English Text MT, Times New Roman, serif',
-                      letterSpacing: '0.5px'
-                    }}
-                  >
+                <div className="mt-2">
+                  <h1 className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight">
                     {state.companyName}
                   </h1>
-                  <div className="h-0.5 w-16 bg-amber-400 mt-2 mx-auto" />
                 </div>
               </div>
             </div>
-            
           </div>
 
           {/* Main Content */}
-          <div className="px-12 py-8">
+          <div className="px-10 py-6 md:px-14">
             {/* Date */}
-            <p className="text-right text-sm mb-8">Date: {formatDate(state.issueDate)}</p>
+            <div className="flex justify-end mb-4">
+              <p className="text-sm text-slate-600">
+                <span className="font-medium">Date:</span> {formatDate(state.issueDate)}
+              </p>
+            </div>
             
             {/* Title */}
-            <div className="text-center mb-8">
-              <h2 className="text-xl font-semibold text-neutral-900 underline underline-offset-4 decoration-2">
-                OFFER LETTER
-              </h2>
+            <div className="text-center mb-5">
+              <h1 className="text-3xl font-normal text-gray-900 mb-3 tracking-tight">
+                OFFER OF EMPLOYMENT
+              </h1>
             </div>
 
             {/* Body Text */}
-            <div className="space-y-6 text-neutral-800 leading-relaxed text-justify">
-              <p>Dear {state.employeeName || '[Employee Name]'},</p>
-              
+            <div className="space-y-3 text-slate-700 leading-6 font-light text-sm">
               <p>
-                We are pleased to offer you the position of <span className="font-medium">{state.designation || '[Designation]'}</span> in our <span className="font-medium">{state.department || '[Department]'}</span> department at {state.companyName}.
-              </p>
-              <p>
-                Your annual compensation will be <span className="font-medium">{state.salary ? `Rs. ${parseInt(state.salary).toLocaleString('en-IN')}/-` : '[Salary]'}</span>.
+                Dear <span className="font-semibold text-slate-900">{state.employeeName || '[Employee Name]'}</span>,
               </p>
               
-              <p>
-                We are excited about the prospect of you joining our team and look forward to your positive response. Please sign and return a copy of this letter to indicate your acceptance of this offer.
+              <p className="text-justify">
+                We are pleased to extend an offer to you for the position of <span className="font-semibold text-slate-900">{state.designation || '[Designation]'}</span> within our <span className="font-semibold text-slate-900">{state.department || '[Department]'}</span> department. We are confident that your skills and experience will be a valuable addition to our organization.
               </p>
-              
-              <div className="mt-6 flex justify-between items-end">
-                <div>
-                  <p className="mb-0.5">Sincerely,</p>
-                  <div className="h-28 w-52 -ml-2 transform scale-110 origin-left">
-                    <img 
-                      src="/sig.png" 
-                      alt="Authorized Signature" 
-                      className="h-full w-full object-contain object-left"
-                    />
-                  </div>
-                  <div className="border-t border-gray-300 w-48 pt-1">
-                    <p className="font-medium">{state.companyName}</p>
-                  </div>
+
+              <div className="bg-slate-50 border border-slate-200 rounded-lg p-6 space-y-3 my-6">
+                <div className="flex justify-between">
+                  <span className="text-slate-600">Position:</span>
+                  <span className="font-semibold text-slate-900">{state.designation || '[Designation]'}</span>
                 </div>
-                <div className="w-32 mb-1">
+                <div className="border-t border-slate-200" />
+                <div className="flex justify-between">
+                  <span className="text-slate-600">Department:</span>
+                  <span className="font-semibold text-slate-900">{state.department || '[Department]'}</span>
+                </div>
+                <div className="border-t border-slate-200" />
+                <div className="flex justify-between">
+                  <span className="text-slate-600">Annual Compensation:</span>
+                  <span className="font-semibold text-slate-900">{state.salary ? `Rs. ${parseInt(state.salary).toLocaleString('en-IN')}/-` : '[Salary]'}</span>
+                </div>
+              </div>
+              
+              <p className="text-justify">
+                We are eager to welcome you to our team. Please review the terms of this offer carefully. To indicate your acceptance, kindly sign and return a copy of this letter at your earliest convenience.
+              </p>
+
+              <p className="text-justify">
+                We look forward to a rewarding professional relationship with you.
+              </p>
+              
+              {/* Signature Section */}
+              <div className="mt-20 pt-16 border-t border-slate-300 -ml-6">
+                <p className="font-semibold text-slate-900 mb-3 text-base">Sincerely,</p>
+                <div className="h-40 w-60">
                   <img 
-                    src="/msme.png" 
-                    alt="MSME Registered" 
-                    className="h-auto w-full object-contain"
+                    src="/sig.png" 
+                    alt="Authorized Signature" 
+                    className="h-full w-full object-contain object-left"
                   />
+                </div>
+                <div className="border-t-2 border-slate-700 w-60 pt-4 mt-2">
+                  <p className="text-sm text-gray-900 font-light mt-1">{state.companyCEO}</p>
+                  <p className="text-slate-600 text-sm mt-1">Authorized Signatory</p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Clean Footer */}
-          <div className="border-t border-gray-200 mt-8">
-            <div className="h-1 bg-amber-400" />
-            
-            <div className="px-12 py-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <p className="font-medium text-gray-800 mb-2">{state.companyName}</p>
-                  <div className="text-sm space-y-1 text-gray-600">
-                    <p>28, 1st Floor, JK Complex, Above Indian Stores,</p>
-                    <p>Mettupalayam Main Road, North Rangasamudram, Sathyamangalam - 638 401</p>
-                  </div>
-                </div>
-                <div className="md:text-right">
-                  <div className="flex items-center gap-2 md:justify-end text-gray-600">
-                    <Phone className="w-4 h-4 text-amber-500" />
-                    <span>{state.companyPhone}</span>
-                  </div>
-                  <div className="flex items-center gap-2 md:justify-end text-gray-600 mt-1">
-                    <Mail className="w-4 h-4 text-amber-500" />
-                    <span>{state.companyEmail}</span>
-                  </div>
-                  <div className="flex items-center gap-2 md:justify-end text-gray-600 mt-1">
-                    <Globe className="w-4 h-4 text-amber-500" />
-                    <span>{state.companyWebsite}</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="mt-6 pt-4 border-t border-gray-200 text-center text-sm text-gray-500">
-                © {new Date().getFullYear()} {state.companyName}. All rights reserved.
-              </div>
-            </div>
-            
-            <div className="h-1 bg-amber-400" />
+          <div className="mt-6 pt-4 border-t border-slate-700 text-center text-xs text-slate-400">
+            &copy; {new Date().getFullYear()} {state.companyName}. All rights reserved.
           </div>
         </div>
       </div>
