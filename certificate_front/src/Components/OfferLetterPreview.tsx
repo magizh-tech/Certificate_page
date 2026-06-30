@@ -2,18 +2,24 @@
 
 import React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Mail, Phone, Globe, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 function OfferLetterPreview() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
   const state = {
+    letterType: (searchParams.get('letterType') || 'employment') as 'employment' | 'internship',
     employeeName: searchParams.get('employeeName') || '',
     designation: searchParams.get('designation') || '',
     department: searchParams.get('department') || '',
+    // Employment
     joiningDate: searchParams.get('joiningDate') || '',
     salary: searchParams.get('salary') || '',
+    // Internship
+    startDate: searchParams.get('startDate') || '',
+    internshipDays: searchParams.get('internshipDays') || '',
+    // Common
     workLocation: searchParams.get('workLocation') || '',
     issueDate: searchParams.get('issueDate') || '',
     companyCEO: searchParams.get('companyCEO') || '',
@@ -23,6 +29,8 @@ function OfferLetterPreview() {
     companyEmail: searchParams.get('companyEmail') || '',
     companyPhone: searchParams.get('companyPhone') || '',
   };
+
+  const isInternship = state.letterType === 'internship';
 
   const handlePrint = () => {
     window.print();
@@ -98,23 +106,30 @@ function OfferLetterPreview() {
             {/* Title */}
             <div className="text-center mb-5">
               <h1 className="text-3xl font-normal text-gray-900 mb-3 tracking-tight">
-                OFFER OF EMPLOYMENT
+                {isInternship ? 'OFFER OF INTERNSHIP' : 'OFFER OF EMPLOYMENT'}
               </h1>
             </div>
 
             {/* Body Text */}
             <div className="space-y-3 text-slate-700 leading-6 font-light text-sm">
               <p>
-                Dear <span className="font-semibold text-slate-900">{state.employeeName || '[Employee Name]'}</span>,
-              </p>
-              
-              <p className="text-justify">
-                We are pleased to extend an offer to you for the position of <span className="font-semibold text-slate-900">{state.designation || '[Designation]'}</span> within our <span className="font-semibold text-slate-900">{state.department || '[Department]'}</span> department. We are confident that your skills and experience will be a valuable addition to our organization.
+                Dear <span className="font-semibold text-slate-900">{state.employeeName || '[Name]'}</span>,
               </p>
 
+              {isInternship ? (
+                <p className="text-justify">
+                  We are pleased to offer you an internship opportunity at <span className="font-semibold text-slate-900">{state.companyName}</span> for the role of <span className="font-semibold text-slate-900">{state.designation || '[Designation]'}</span> within our <span className="font-semibold text-slate-900">{state.department || '[Department]'}</span> department. We believe this internship will be a valuable learning experience for you.
+                </p>
+              ) : (
+                <p className="text-justify">
+                  We are pleased to extend an offer to you for the position of <span className="font-semibold text-slate-900">{state.designation || '[Designation]'}</span> within our <span className="font-semibold text-slate-900">{state.department || '[Department]'}</span> department. We are confident that your skills and experience will be a valuable addition to our organization.
+                </p>
+              )}
+
+              {/* Details box */}
               <div className="bg-slate-50 border border-slate-200 rounded-lg p-6 space-y-3 my-6">
                 <div className="flex justify-between">
-                  <span className="text-slate-600">Position:</span>
+                  <span className="text-slate-600">{isInternship ? 'Role' : 'Position'}:</span>
                   <span className="font-semibold text-slate-900">{state.designation || '[Designation]'}</span>
                 </div>
                 <div className="border-t border-slate-200" />
@@ -123,14 +138,42 @@ function OfferLetterPreview() {
                   <span className="font-semibold text-slate-900">{state.department || '[Department]'}</span>
                 </div>
                 <div className="border-t border-slate-200" />
-                <div className="flex justify-between">
-                  <span className="text-slate-600">Annual Compensation:</span>
-                  <span className="font-semibold text-slate-900">{state.salary ? `Rs. ${parseInt(state.salary).toLocaleString('en-IN')}/-` : '[Salary]'}</span>
-                </div>
+
+                {isInternship ? (
+                  <>
+                    <div className="flex justify-between">
+                      <span className="text-slate-600">Start Date:</span>
+                      <span className="font-semibold text-slate-900">{formatDate(state.startDate)}</span>
+                    </div>
+                    <div className="border-t border-slate-200" />
+                    <div className="flex justify-between">
+                      <span className="text-slate-600">Duration:</span>
+                      <span className="font-semibold text-slate-900">
+                        {state.internshipDays ? `${state.internshipDays} Days` : '[Duration]'}
+                      </span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex justify-between">
+                    <span className="text-slate-600">Annual Compensation:</span>
+                    <span className="font-semibold text-slate-900">
+                      {state.salary ? `Rs. ${parseInt(state.salary.replace(/,/g, '')).toLocaleString('en-IN')}/-` : '[Salary]'}
+                    </span>
+                  </div>
+                )}
               </div>
-              
+
+              {isInternship && (
+                <p className="text-justify text-slate-600 italic border-l-2 border-slate-300 pl-4">
+                  Please note that the internship duration is tentative and may be extended based on your performance and the requirements of the organization.
+                </p>
+              )}
+
               <p className="text-justify">
-                We are eager to welcome you to our team. Please review the terms of this offer carefully. To indicate your acceptance, kindly sign and return a copy of this letter at your earliest convenience.
+                {isInternship
+                  ? 'We look forward to having you as part of our team. Please confirm your acceptance by signing and returning a copy of this letter at your earliest convenience.'
+                  : 'We are eager to welcome you to our team. Please review the terms of this offer carefully. To indicate your acceptance, kindly sign and return a copy of this letter at your earliest convenience.'
+                }
               </p>
 
               <p className="text-justify">
