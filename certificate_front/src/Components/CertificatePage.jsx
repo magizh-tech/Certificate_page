@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 const CertificatePage = () => {
   const location = useLocation();
   const [name, setName] = useState("");
-  const [issueDate, setIssueDate] = useState("");
+  const [issueDate, setIssueDate] = useState(new Date().toISOString().split('T')[0]);
   const [certificateId, setCertificateId] = useState(""); // Added certificate ID
   const [selectedCourse, setSelectedCourse] = useState(
     location.state?.type === 'internship' 
