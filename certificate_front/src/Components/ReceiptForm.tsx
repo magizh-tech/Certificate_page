@@ -52,12 +52,50 @@ export default function ReceiptForm() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const resolvedDate = date || new Date();
     setReceiptData(prev => ({
       ...prev,
-      date: date
+      date: resolvedDate
     }));
+
+    try {
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      const token = localStorage.getItem('adminToken');
+      
+      const payload = {
+        document_type: 'receipt',
+        recipient_name: receiptData.from,
+        recipient_email: null,
+        issue_date: resolvedDate.toISOString().split('T')[0],
+        metadata_json: {
+          ...receiptData,
+          date: resolvedDate.toISOString()
+        }
+      };
+
+      const res = await fetch(`${API_URL}/api/documents`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+      
+      if (res.ok) {
+        const docData = await res.json();
+        // Option to display the generated unique hash on the receipt
+        setReceiptData(prev => ({
+          ...prev,
+          receiptNumber: docData.unique_hash.substring(0, 8).toUpperCase()
+        }));
+      }
+    } catch (err) {
+      console.error('Backend save failed for receipt:', err);
+    }
+    
     setShowReceipt(true);
   };
 

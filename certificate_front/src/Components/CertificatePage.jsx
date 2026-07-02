@@ -14,11 +14,49 @@ const CertificatePage = () => {
   
   const navigate = useNavigate();
 
-  const generateCertificate = () => {
+  const generateCertificate = async () => {
     // Basic validation
     if (!name || !selectedCourse) {
       alert("Please fill in all required details before proceeding.");
       return;
+    }
+
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+    const token = localStorage.getItem('adminToken');
+    const finalId = certificateId || `CERT-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+    const docType = selectedCourse.includes("Internship") ? "internship" : "course";
+
+    const payload = {
+      document_type: docType,
+      recipient_name: name,
+      recipient_email: null,
+      issue_date: issueDate || new Date().toISOString().split('T')[0],
+      metadata_json: {
+        name,
+        course: selectedCourse,
+        certificateId: finalId
+      }
+    };
+
+    let uniqueHash = '';
+    let dbId = '';
+
+    try {
+      const res = await fetch(`${API_URL}/api/documents`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        const docData = await res.json();
+        uniqueHash = docData.unique_hash;
+        dbId = docData.id;
+      }
+    } catch (err) {
+      console.error('Backend save failed for certificate, using fallback:', err);
     }
 
     // Navigate to the appropriate form based on document type
@@ -26,8 +64,9 @@ const CertificatePage = () => {
       state: {
         name,
         issueDate: issueDate || new Date().toISOString().split('T')[0],
-        certificateId: certificateId || `CERT-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
-        course: selectedCourse
+        certificateId: uniqueHash || finalId,
+        course: selectedCourse,
+        dbId: dbId
       } 
     });
   };

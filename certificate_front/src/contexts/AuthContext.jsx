@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext(null);
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -9,30 +10,62 @@ export function AuthProvider({ children }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check for existing session on initial load
-    const token = localStorage.getItem('adminToken');
-    if (token) {
-      // In a real app, verify the token with the backend
-      setUser({ username: 'admin' });
-    }
-    setLoading(false);
+    const verifyToken = async () => {
+      const token = localStorage.getItem('adminToken');
+      if (token) {
+        try {
+          const res = await fetch(`${API_URL}/api/auth/me`, {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          if (res.ok) {
+            const userData = await res.json();
+            setUser(userData);
+          } else {
+            localStorage.removeItem('adminToken');
+          }
+        } catch (error) {
+          console.error('Failed to verify token:', error);
+          localStorage.removeItem('adminToken');
+        }
+      }
+      setLoading(false);
+    };
+    verifyToken();
   }, []);
-
-  const ADMIN_CREDENTIALS = {
-    username: import.meta.env.VITE_ADMIN_USERNAME || 'admin',
-    password: import.meta.env.VITE_ADMIN_PASSWORD || 'admin123'
-  };
 
   const login = async (username, password) => {
     try {
-      if (username === ADMIN_CREDENTIALS.username && 
-          password === ADMIN_CREDENTIALS.password) {
-        const token = 'dummy-jwt-token'; // In a real app, get this from your backend
-        localStorage.setItem('adminToken', token);
-        setUser({ username });
+      const res = await fetch(`${API_URL}/api/auth/token`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email: username, password })
+      });
+      
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.detail || 'Invalid username or password');
+      }
+      
+      const { access_token } = await res.json();
+      localStorage.setItem('adminToken', access_token);
+      
+      // Fetch user details
+      const userRes = await fetch(`${API_URL}/api/auth/me`, {
+        headers: {
+          'Authorization': `Bearer ${access_token}`
+        }
+      });
+      
+      if (userRes.ok) {
+        const userData = await userRes.json();
+        setUser(userData);
         return true;
       }
-      throw new Error('Invalid username or password');
+      throw new Error('Failed to retrieve user profile');
     } catch (error) {
       console.error('Login error:', error);
       throw error;
@@ -79,3 +112,4 @@ export function ProtectedRoute({ children }) {
 
   return isAuthenticated ? children : null;
 }
+

@@ -91,11 +91,44 @@ export default function OfferLetterFormPage() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 800));
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      const token = localStorage.getItem('adminToken');
+      
+      const payload = {
+        document_type: 'offer_letter',
+        recipient_name: formData.employeeName,
+        recipient_email: null,
+        issue_date: formData.issueDate,
+        metadata_json: formData
+      };
+      
+      let uniqueHash = '';
+      let documentId = '';
+      try {
+        const res = await fetch(`${API_URL}/api/documents`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          const docData = await res.json();
+          uniqueHash = docData.unique_hash;
+          documentId = docData.id;
+        }
+      } catch (err) {
+        console.error('Backend save failed, using local fallback:', err);
+      }
+
       const params = new URLSearchParams();
       Object.entries(formData).forEach(([key, value]) => {
         params.set(key, value);
       });
+      if (uniqueHash) params.set('uniqueHash', uniqueHash);
+      if (documentId) params.set('documentId', documentId);
+      
       navigate(`/preview?${params.toString()}`);
     } catch (error) {
       console.error('Error generating offer letter:', error);

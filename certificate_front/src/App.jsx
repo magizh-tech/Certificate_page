@@ -12,6 +12,7 @@ import { RelievingLetterPreview } from './Components/RelievingLetterPreview';
 import { NewRelievingLetterForm } from './Components/NewRelievingLetterForm';
 import LoginPage from './Components/LoginPage';
 import ReceiptForm from './Components/ReceiptForm';
+import VerifyPage from './Components/VerifyPage';
 import './App.css';
 import './index.css';
 
@@ -23,6 +24,7 @@ const AppRoutes = () => {
       <Route path="/login" element={isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />} />
       
       <Route path="/" element={<HomePage />} />
+      <Route path="/verify/:id" element={<VerifyPage />} />
       
       {/* Protected Routes */}
       <Route path="/certificate" element={
